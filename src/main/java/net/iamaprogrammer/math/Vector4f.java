@@ -72,7 +72,21 @@ public class Vector4f {
     }
 
     public void toBuffer(FloatBuffer buffer) {
+        this.toBuffer(buffer, true);
+    }
+
+    public void toBuffer(FloatBuffer buffer, boolean flip) {
         buffer.put(x).put(y).put(z).put(w);
-        buffer.flip();
+        if (flip) {
+            buffer.flip();
+        }
+    }
+
+    public String toString() {
+        return "[" + x + ", " + y + ", " + z + ", " + w + "]";
+    }
+
+    public void toArray(int offset, float[] array) {
+        array[offset]  =  this.x; array[offset+1]  =  this.y; array[offset+2]  =  this.z; array[offset+3]  = this.w;
     }
 }

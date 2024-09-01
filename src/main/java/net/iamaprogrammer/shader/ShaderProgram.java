@@ -4,6 +4,7 @@ import net.iamaprogrammer.math.*;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
@@ -27,32 +28,63 @@ public class ShaderProgram {
         return this.id;
     }
 
-    public void setUniform(String name, Vector2f uniformValue) {
+    public void setUniform(String name, int uniformValue) {
         int uniform = glGetUniformLocation(this.id, name);
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            FloatBuffer buffer = stack.mallocFloat(2);
-            uniformValue.toBuffer(buffer);
+            IntBuffer buffer = stack.mallocInt(1);
+            buffer.put(uniformValue);
+            buffer.flip();
+            glUniform1iv(uniform, buffer);
+        }
+    }
+
+    public void setUniform(String name, float uniformValue) {
+        int uniform = glGetUniformLocation(this.id, name);
+
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            FloatBuffer buffer = stack.mallocFloat(1);
+            buffer.put(uniformValue);
+            buffer.flip();
+            glUniform1fv(uniform, buffer);
+        }
+    }
+
+    public void setUniform(String name, Vector2f... uniformValue) {
+        int uniform = glGetUniformLocation(this.id, name);
+
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            FloatBuffer buffer = stack.mallocFloat(2 * uniformValue.length);
+            for (Vector2f value : uniformValue) {
+                value.toBuffer(buffer, false);
+            }
+            buffer.flip();
             glUniform2fv(uniform, buffer);
         }
     }
 
-    public void setUniform(String name, Vector3f uniformValue) {
+    public void setUniform(String name, Vector3f... uniformValue) {
         int uniform = glGetUniformLocation(this.id, name);
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            FloatBuffer buffer = stack.mallocFloat(3);
-            uniformValue.toBuffer(buffer);
+            FloatBuffer buffer = stack.mallocFloat(3 * uniformValue.length);
+            for (Vector3f value : uniformValue) {
+                value.toBuffer(buffer, false);
+            }
+            buffer.flip();
             glUniform3fv(uniform, buffer);
         }
     }
 
-    public void setUniform(String name, Vector4f uniformValue) {
+    public void setUniform(String name, Vector4f... uniformValue) {
         int uniform = glGetUniformLocation(this.id, name);
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            FloatBuffer buffer = stack.mallocFloat(4);
-            uniformValue.toBuffer(buffer);
+            FloatBuffer buffer = stack.mallocFloat(4 * uniformValue.length);
+            for (Vector4f value : uniformValue) {
+                value.toBuffer(buffer, false);
+            }
+            buffer.flip();
             glUniform4fv(uniform, buffer);
         }
     }
@@ -83,9 +115,6 @@ public class ShaderProgram {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             FloatBuffer buffer = stack.mallocFloat(4*4);
             uniformValue.toBuffer(buffer);
-            for (int i = 0; i < 16; i++) {
-                //System.out.println(buffer.get(i));
-            }
             glUniformMatrix4fv(uniform, false, buffer);
         }
     }

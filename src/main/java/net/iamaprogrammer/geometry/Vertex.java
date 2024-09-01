@@ -1,26 +1,28 @@
 package net.iamaprogrammer.geometry;
 
+import net.iamaprogrammer.math.Vector2f;
 import net.iamaprogrammer.math.Vector3f;
+import net.iamaprogrammer.math.Vector4f;
 
 public class Vertex {
-    private static final int SIZE = 6;
+    private static final int SIZE = 8;
 
     private final float x;
     private final float y;
     private final float z;
+    private final float w;
 
-    private final float r;
-    private final float g;
-    private final float b;
+    private final float u;
+    private final float v;
 
-    public Vertex(Vector3f position, Vector3f color) {
+    public Vertex(Vector3f position, Vector2f uv) {
         this.x = position.x;
         this.y = position.y;
         this.z = position.z;
+        this.w = 1.0f;
 
-        this.r = color.x;
-        this.g = color.y;
-        this.b = color.z;
+        this.u = uv.x;
+        this.v = uv.y;
     }
 
     public float getX() {
@@ -35,17 +37,12 @@ public class Vertex {
         return this.z;
     }
 
-
-    public float getR() {
-        return this.r;
+    public float getU() {
+        return u;
     }
 
-    public float getG() {
-        return this.g;
-    }
-
-    public float getB() {
-        return this.b;
+    public float getV() {
+        return v;
     }
 
     public static float[] asBuffer(Vertex[] vertices) {
@@ -59,10 +56,12 @@ public class Vertex {
             vertexBuffer[row]     = vertex.getX();
             vertexBuffer[row + 1] = vertex.getY();
             vertexBuffer[row + 2] = vertex.getZ();
+            vertexBuffer[row + 3] = vertex.w;
 
-            vertexBuffer[row + 3] = vertex.getR();
-            vertexBuffer[row + 4] = vertex.getG();
-            vertexBuffer[row + 5] = vertex.getB();
+            vertexBuffer[row + 4] = vertex.getU();
+            vertexBuffer[row + 5] = vertex.getV();
+            vertexBuffer[row + 6] = 0.0f;
+            vertexBuffer[row + 7] = 0.0f;
         }
 
         return vertexBuffer;

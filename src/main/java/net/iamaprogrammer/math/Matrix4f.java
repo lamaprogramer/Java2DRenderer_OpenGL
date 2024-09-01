@@ -175,11 +175,22 @@ public class Matrix4f {
     }
 
     public void toBuffer(FloatBuffer buffer) {
+        putBuffer(buffer);
+        buffer.flip();
+    }
+
+    public void putBuffer(FloatBuffer buffer) {
         buffer.put(m00).put(m10).put(m20).put(m30);
         buffer.put(m01).put(m11).put(m21).put(m31);
         buffer.put(m02).put(m12).put(m22).put(m32);
         buffer.put(m03).put(m13).put(m23).put(m33);
-        buffer.flip();
+    }
+
+    public void toArray(int offset, float[] array) {
+        array[offset+0]  =  m00; array[offset+1]  =  m01; array[offset+2]  =  m02; array[offset+3]  = m03;
+        array[offset+4]  =  m10; array[offset+5]  =  m11; array[offset+6]  =  m12; array[offset+7]  = m13;
+        array[offset+8]  =  m20; array[offset+9]  =  m21; array[offset+10] =  m22; array[offset+11] = m23;
+        array[offset+12] =  m30; array[offset+13] =  m31; array[offset+14] =  m32; array[offset+15] = m33;
     }
 
     public String toString() {

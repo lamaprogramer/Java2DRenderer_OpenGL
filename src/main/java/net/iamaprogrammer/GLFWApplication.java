@@ -1,6 +1,5 @@
 package net.iamaprogrammer;
 
-import net.iamaprogrammer.shader.ShaderManager;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -10,14 +9,11 @@ import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL20.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class GLFWApplication {
     private long windowHandle;
-    private final ShaderManager shaderManager;
 
     private final String title;
     private final int width;
@@ -27,8 +23,6 @@ public class GLFWApplication {
     private int resizable = GLFW_TRUE;
 
     public GLFWApplication(String title, int width, int height) {
-        this.shaderManager = new ShaderManager();
-
         this.title = title;
         this.width = width;
         this.height = height;
@@ -45,10 +39,10 @@ public class GLFWApplication {
         glfwSetErrorCallback(null).free();
     }
 
-    protected void initShaders(ShaderManager shaderManager) {}
     protected void bindKeys(long windowHandle, int width, int height) {}
-    protected void initGraphics(ShaderManager shaderManager) {}
-    protected void frame(ShaderManager shaderManager) {}
+    protected void onInit() {}
+    protected void frame() {}
+    protected void onExit() {}
 
     public int getHeight() {
         return height;
@@ -100,21 +94,27 @@ public class GLFWApplication {
 
     private void loop() {
         GL.createCapabilities();
-        this.initShaders(this.shaderManager);
-        this.initGraphics(this.shaderManager);
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        // Make the window visible
+        this.onInit();
+
         glfwShowWindow(this.windowHandle);
 
+        double frame_start = glfwGetTime();
+        int passed_frames = 0;
         while (!glfwWindowShouldClose(this.windowHandle)) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+            this.frame();
 
-            this.frame(this.shaderManager);
+            // Frame Counter
+            if (glfwGetTime() - frame_start >= 1.0) {
+                frame_start = glfwGetTime();
+                System.out.println("FPS: " + passed_frames);
+                passed_frames = 0;
+            }
+            passed_frames++;
 
             glfwSwapBuffers(this.windowHandle); // swap the color buffers
             glfwPollEvents();
         }
 
-        this.shaderManager.close();
+        this.onExit();
     }
 }
